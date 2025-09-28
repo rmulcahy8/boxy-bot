@@ -8,9 +8,7 @@ A simple chatbot prototype for the **eGain SWE Take‑Home Assignment** designed
 
 ### For technical users
 
-Open index.html directly in a modern browser (Chrome or Firefox). No build step required.
-
-Open `http://localhost:5500` in your browser.
+Clone the repo, then open `index.html` in a modern browser (Chrome/Firefox). No build step required.
 
 ### For non-technical users
 
