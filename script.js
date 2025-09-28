@@ -12,6 +12,8 @@ const conversation = {
 
 let activeInputStep = null;
 let typingQueue = Promise.resolve();
+let currentQuickReplies = [];
+let quickReplyTypingEnabled = false;
 
 const TYPEWRITER_DELAY = 22;
 const BLOCK_ELEMENTS = new Set([
@@ -495,19 +497,34 @@ function removeTypingIndicator(container) {
 }
 
 function setQuickReplies(options) {
+  currentQuickReplies = Array.isArray(options) ? options : [];
   quickReplies.innerHTML = '';
-  if (!options || options.length === 0) {
+  if (currentQuickReplies.length === 0) {
     quickReplies.style.display = 'none';
+    quickReplyTypingEnabled = false;
+    if (!activeInputStep) {
+      textEntry.hidden = true;
+      userInput.value = '';
+      inputHint.textContent = '';
+    }
     return;
   }
   quickReplies.style.display = 'flex';
-  options.forEach((option) => {
+  currentQuickReplies.forEach((option) => {
     const button = document.createElement('button');
     button.type = 'button';
     button.textContent = option.label;
     button.addEventListener('click', () => handleQuickReply(option));
     quickReplies.appendChild(button);
   });
+  if (!activeInputStep) {
+    quickReplyTypingEnabled = true;
+    textEntry.hidden = false;
+    inputLabel.textContent = 'Choose an option';
+    userInput.placeholder = 'Type an option shown above';
+    userInput.value = '';
+    inputHint.textContent = 'Type the option text or tap a button.';
+  }
 }
 
 function showTextInput({ label, placeholder, hint }) {
@@ -523,13 +540,22 @@ function showTextInput({ label, placeholder, hint }) {
 
 function hideTextInput() {
   activeInputStep = null;
-  textEntry.hidden = true;
+  if (!quickReplyTypingEnabled) {
+    textEntry.hidden = true;
+  }
   userInput.value = '';
-  inputHint.textContent = '';
+  if (!quickReplyTypingEnabled) {
+    inputHint.textContent = '';
+  }
 }
 
 function handleQuickReply(option) {
   userSay(option.label);
+  userInput.value = '';
+  processQuickReply(option);
+}
+
+function processQuickReply(option) {
   const step = steps[conversation.step];
   let next = option.next || null;
   if (step && typeof step.onSelect === 'function') {
@@ -546,6 +572,7 @@ function handleQuickReply(option) {
     }
   }
   if (next) {
+    quickReplyTypingEnabled = false;
     advanceTo(next);
   }
 }
@@ -556,7 +583,16 @@ textEntry.addEventListener('submit', (event) => {
   if (!value) {
     return;
   }
+  const quickReplyOption =
+    !activeInputStep && quickReplyTypingEnabled
+      ? findMatchingQuickReply(value)
+      : null;
   userSay(value);
+  userInput.value = '';
+  if (quickReplyOption) {
+    processQuickReply(quickReplyOption);
+    return;
+  }
   const step = steps[activeInputStep];
   if (!step || typeof step.onInput !== 'function') {
     offTopicFallback();
@@ -595,6 +631,21 @@ function advanceTo(stepName) {
   if (typeof step.onEnter === 'function') {
     setTimeout(() => step.onEnter(), 260);
   }
+}
+
+function findMatchingQuickReply(text) {
+  const normalized = text.trim().toLowerCase();
+  if (!normalized) {
+    return null;
+  }
+  return currentQuickReplies.find((option) => {
+    const labels = [option.label, option.value].filter(
+      (item) => typeof item === 'string'
+    );
+    return labels.some(
+      (label) => label.trim().toLowerCase() === normalized
+    );
+  });
 }
 
 function buildTrackingSummary() {
