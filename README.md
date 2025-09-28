@@ -126,7 +126,7 @@ The chatbot validates dates with three checks: format `MM/DD/YYYY`, real calenda
 - User: `12/31/2099`  
 - Bot: "That date is in the future. Please enter the actual expected delivery date."
 
-![Gif didn't load properly.](assets/dateinvalid.gif)
+![Gif didn't load properly.](assets/datedate.gif)
 
 ### If an invalid tracking number is entered:
 
