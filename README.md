@@ -107,10 +107,10 @@ flowchart TD
 
 ---
 
-## Screenshots / Examples
+## Example
 
 
-![any alternative text you want ](./boxy.gif)
+![Gif didn't load properly.](./boxy.gif)
 
 
 ---
