@@ -107,6 +107,7 @@ body {
   padding-bottom: 24px;
 }
 
+
 .message {
   max-width: 80%;
   padding: 12px 16px;
@@ -117,10 +118,11 @@ body {
   display: inline-flex;
   flex-direction: column;
   gap: 6px;
+  background: transparent;
 }
 
 .message.bot {
-  background: var(--pink-soft);
+  background: transparent;
   border: none;
   align-self: flex-start;
   color: var(--navy);
