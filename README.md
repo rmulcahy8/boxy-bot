@@ -30,6 +30,16 @@ Open `http://localhost:5500` in your browser.
 
 ---
 
+---
+
+## Example
+
+
+![Gif didn't load properly.](./boxy.gif)
+
+
+---
+
 ## Approach
 
 * Scenario: **Helping a customer track a lost package**
@@ -105,15 +115,7 @@ flowchart TD
 
 ```
 
----
 
-## Example
-
-
-![Gif didn't load properly.](./boxy.gif)
-
-
----
 
 ## Error Handling Examples
 
