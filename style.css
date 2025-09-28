@@ -126,28 +126,6 @@ body {
   color: var(--navy);
 }
 
-.message.bot.typing::after {
-  content: '';
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  width: 2px;
-  height: 18px;
-  background: var(--pink);
-  animation: caretBlink 0.9s steps(1, end) infinite;
-}
-
-@keyframes caretBlink {
-  0%,
-  50% {
-    opacity: 1;
-  }
-  51%,
-  100% {
-    opacity: 0;
-  }
-}
-
 .message.user {
   background: var(--navy);
   color: white;
