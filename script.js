@@ -97,7 +97,7 @@ const steps = {
       }
       inputHint.textContent = '';
       conversation.data.trackingNumber = normalized.toUpperCase();
-      botSay(`Thanks! Got it: <strong>${conversation.data.trackingNumber}</strong>.`);
+      botSay(`Thanks! Got it: ${conversation.data.trackingNumber}.`);
       return { next: 'askCarrier' };
     },
   },
@@ -126,7 +126,7 @@ const steps = {
       const summary = buildTrackingSummary();
       botSay(
         [
-          `<strong>Status:</strong> ${summary.status}`,
+          `Status: ${summary.status}`,
           `<small>Last scan: ${summary.lastScan}</small>`,
           `<small>ETA: ${summary.eta}</small>`,
         ]
@@ -214,7 +214,7 @@ const steps = {
       const ticket = generateTicket('INV');
       conversation.data.investigationId = ticket;
       botSay(
-        `Ticket <strong>${ticket}</strong> is open. Our team will review scans and reach out within 24 hours.`
+        `Ticket ${ticket} is open. Our team will review scans and reach out within 24 hours.`
       );
       setQuickReplies([
         { label: 'Talk to an agent', next: 'agentTransfer' },
@@ -249,7 +249,7 @@ const steps = {
       const ticket = generateTicket('CLM');
       conversation.data.claimId = ticket;
       botSay(
-        `Claim <strong>${ticket}</strong> is submitted. Please hang onto the packaging until our partner reviews photos.`
+        `Claim ${ticket} is submitted. Please hang onto the packaging until our partner reviews photos.`
       );
       setQuickReplies([
         { label: 'Care tips while you wait', next: 'damageTips' },
@@ -260,7 +260,7 @@ const steps = {
   damageTips: {
     onEnter() {
       const tips = `
-        <strong>While you wait:</strong>
+        <p>While you wait:</p>
         <ul>
           <li>Photograph the damage from multiple angles.</li>
           <li>Keep original packaging for the carrier inspection.</li>
