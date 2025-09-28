@@ -66,9 +66,7 @@ const statusPhrases = [
 const steps = {
   start: {
     onEnter() {
-      botSay(
-        "Hi, I'm <strong>Boxy</strong>! What's wrong with your package?"
-      );
+      botSay("Hi, I'm Boxy! Can I assist you with your lost package today?");
       setQuickReplies([
         { label: 'No tracking updates', next: 'askTrackingNumber' },
         { label: 'Package seems missing', next: 'askExpectedDate' },
