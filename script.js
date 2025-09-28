@@ -301,8 +301,6 @@ const steps = {
 function botSay(content) {
   const bubble = document.createElement('div');
   bubble.className = 'message bot typing';
-  chatBody.appendChild(bubble);
-  scrollToBottom();
 
   let html = Array.isArray(content) ? content.join('<br />') : content;
   if (typeof html === 'string') {
@@ -310,7 +308,11 @@ function botSay(content) {
   }
 
   typingQueue = typingQueue
-    .then(() => typewriterInto(bubble, html))
+    .then(() => {
+      chatBody.appendChild(bubble);
+      scrollToBottom();
+      return typewriterInto(bubble, html);
+    })
     .then(() => {
       bubble.classList.remove('typing');
       scrollToBottom();
