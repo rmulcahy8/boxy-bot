@@ -1,49 +1,93 @@
-# Boxy Bot
+# Boxy — Lost Package Assistant
 
-Boxy Bot is a small, front-end only demo that showcases a scripted package-support assistant. The project was built for interview walkthroughs where a realistic conversation flow is more helpful than production-ready integrations.
-
-## What the demo does
-
-- **Guided conversation:** The widget starts by asking what went wrong with a shipment and branches into three focused flows: tracking updates, missing packages, and damaged deliveries.
-- **Quick reply buttons:** Most steps use buttons so the user can stay inside the intended decision tree. When text is required (such as tracking numbers, delivery dates, or damage details) the widget temporarily swaps to a text field with inline guidance.
-- **Mock logistics data:** Tracking summaries, investigation ticket IDs, and claim IDs are generated on the fly so the flow feels live without any network calls.
-- **Off-topic guardrail:** If the conversation wanders away from package support, the bot nudges the user back to the main troubleshooting options or offers a handoff to a human.
-
-All of this logic lives in [`script.js`](./script.js) as a lightweight state machine—each step defines how the bot greets the user, what input it expects, and which step should run next.
-
-## Running the demo
-
-1. Clone or download this repository.
-2. Open [`index.html`](./index.html) in any modern browser.
-   - You can also serve the folder with any static file server and navigate to the hosted `index.html`.
-
-There is no build process or external dependency; the experience is pure HTML, CSS, and vanilla JavaScript.
-
-## Using the widget
-
-1. Click the quick replies to move through the scripted paths.
-2. Provide input when the text field appears:
-   - Tracking numbers must be 8–22 alphanumeric characters.
-   - Expected delivery dates are entered as `MM/DD/YYYY` and must be in the past.
-   - Damage descriptions should include at least ten characters.
-3. Choose “Talk to an agent” at any time to trigger the mock handoff response, or “Restart” to begin again from the top.
-
-## Project structure
-
-```
-index.html   # Page shell and chat widget markup
-style.css    # Layout, typography, and widget styling
-script.js    # Conversation state machine and helper utilities
-assets/      # Mascot SVGs and other visual assets used by the page
-```
-
-## Ideas for further exploration
-
-- Swap the random data helpers for real carrier APIs and event history.
-- Expand the decision tree with multi-package handling and richer self-service flows.
-- Persist conversations to local storage so the chat history survives a refresh.
-- Layer in natural-language intent detection before routing back into the scripted flows.
+A simple chatbot prototype for the **eGain SWE Take‑Home Assignment** designed to help users recover lost packages.
 
 ---
 
-This repository contains a single-page prototype—perfect for showing how a guided support assistant could behave without standing up any backend services.
+## Setup / Installation
+
+### For technical users
+
+```bash
+# clone the repo
+git clone https://github.com/rmulcahy8/boxy-bot.git
+cd boxy-bot
+
+# run by opening index.html in a browser
+# or serve locally:
+python3 -m http.server 5500
+```
+
+Open `http://localhost:5500` in your browser.
+
+### For non-technical users
+
+1. Click the green **Code** button at the top of this repository.
+2. Select **Download ZIP**.
+3. Extract the ZIP file to a folder on your computer.
+4. Open the extracted folder.
+5. Double-click `index.html` to open it in your browser.
+
+---
+
+## Approach
+
+* Scenario: **Helping a customer track a lost package**
+* Conversation starts with four quick replies:
+
+  * No tracking updates
+  * Package seems missing
+  * Package arrived damaged
+  * Something else
+* Each branch validates input, gives clear next steps, and routes to closure or agent handoff.
+* Error handling included (tracking number, date, description length).
+* Brief instructions are always displayed at the bottom of the chatbot window, guiding the user on what to do next.
+* Users can either click one of the suggested quick reply buttons or type their answer directly.
+
+---
+
+## Conversation Flow
+
+Conversation flowchart (see also `/assets/flowchart.svg`):
+
+```mermaid
+flowchart TD
+  S([Start]) --> N[No tracking updates]
+  S --> M[Package missing]
+  S --> D[Damaged package]
+  S --> O[Something else]
+  N -->|validations| H{Agent or close}
+  M -->|open INV| H
+  D -->|file CLM| H
+  O -->|restart/agent| H
+  H --> A[Agent transfer]
+  H --> C[Closing]
+```
+
+---
+
+## Screenshots / Examples
+
+GIF and SVG assets are in the `/assets/` folder:
+
+```markdown
+![Chat demo](assets/boxy.gif)
+![Conversation flowchart](assets/flowchart.svg)
+![Chat demo SVG](assets/chat-demo.svg)
+```
+
+---
+
+## Error Handling Examples
+
+* **Tracking number too short/invalid:**
+
+  * User: `123`
+  * Bot: "Tracking numbers must be 8–22 characters. Please try again."
+
+* **Future delivery date entered:**
+
+  * User: `12/31/2099`
+  * Bot: "That date is in the future. Please enter the actual expected delivery date."
+
+---
