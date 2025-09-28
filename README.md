@@ -8,15 +8,7 @@ A simple chatbot prototype for the **eGain SWE Take‑Home Assignment** designed
 
 ### For technical users
 
-```bash
-# clone the repo
-git clone https://github.com/rmulcahy8/boxy-bot.git
-cd boxy-bot
-
-# run by opening index.html in a browser
-# or serve locally:
-python3 -m http.server 5500
-```
+Open index.html directly in a modern browser (Chrome or Firefox). No build step required.
 
 Open `http://localhost:5500` in your browser.
 
