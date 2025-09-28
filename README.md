@@ -111,6 +111,7 @@ flowchart TD
 
 ```markdown
 ![Chat demo](https://raw.githubusercontent.com/rmulcahy8/boxy-bot/main/assets/boxy.gif)
+
 ```
 
 ---
