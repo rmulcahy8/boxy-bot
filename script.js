@@ -1,3 +1,4 @@
+// Cache the primary chat DOM nodes once so we avoid repeated lookups.
 const chatBody = document.getElementById('chatBody');
 const quickReplies = document.getElementById('quickReplies');
 const textEntry = document.getElementById('textEntry');
@@ -5,14 +6,22 @@ const userInput = document.getElementById('userInput');
 const inputLabel = document.getElementById('inputLabel');
 const inputHint = document.getElementById('inputHint');
 
+// Central store to remember the current step and any collected answers.
 const conversation = {
   step: null,
   data: {},
 };
 
+// Track which step is currently collecting free-form input from the user.
 let activeInputStep = null;
+// Queue used by the typewriter effect so bot messages render sequentially.
 let typingQueue = Promise.resolve();
+// Snapshot of the quick reply options the UI is showing.
+let currentQuickReplies = [];
+// Flag indicating whether the text field should treat submissions as quick replies.
+let quickReplyTypingEnabled = false;
 
+// Pace the typewriter effect so the bot feels conversational.
 const TYPEWRITER_DELAY = 22;
 const BLOCK_ELEMENTS = new Set([
   'ADDRESS',
@@ -63,6 +72,8 @@ const statusPhrases = [
   'Parcel processed - awaiting departure',
 ];
 
+// State machine that drives the chat flow. Each step defines how to behave
+// when entered and how to handle the user's response.
 const steps = {
   start: {
     onEnter() {
@@ -87,6 +98,7 @@ const steps = {
       });
     },
     onInput(value) {
+      // Strip whitespace because users sometimes paste formatted numbers.
       const normalized = value.replace(/\s+/g, '');
       if (!/^[A-Za-z0-9]{8,22}$/.test(normalized)) {
         botSay(
@@ -161,6 +173,7 @@ const steps = {
       });
     },
     onInput(value) {
+      // Remove stray whitespace so validation focuses on the essential text.
       const trimmed = value.trim();
       if (!/^\d{2}\/\d{2}\/\d{4}$/.test(trimmed)) {
         botSay('Please use the MM/DD/YYYY format.');
@@ -298,6 +311,7 @@ const steps = {
   },
 };
 
+// Render a bot bubble with a typewriter animation for the provided content.
 function botSay(content) {
   const bubble = document.createElement('div');
   bubble.className = 'message bot typing';
@@ -327,6 +341,7 @@ function botSay(content) {
   return bubble;
 }
 
+// Create a plain user bubble so their answer appears instantly in the chat log.
 function userSay(text) {
   const bubble = document.createElement('div');
   bubble.className = 'message user';
@@ -335,10 +350,12 @@ function userSay(text) {
   scrollToBottom();
 }
 
+// Ensure the chat window stays scrolled to the latest message.
 function scrollToBottom() {
   chatBody.scrollTop = chatBody.scrollHeight;
 }
 
+// Apply the typewriter effect into a chat bubble by walking over nodes one at a time.
 function typewriterInto(container, html) {
   removeTypingIndicator(container);
   container.innerHTML = '';
@@ -353,6 +370,7 @@ function typewriterInto(container, html) {
   );
 }
 
+// Clean up DOM nodes so the typewriter animation has predictable spacing.
 function normalizeChildren(nodeList) {
   return Array.from(nodeList).reduce((accumulator, node) => {
     if (node.nodeType === Node.TEXT_NODE) {
@@ -377,10 +395,12 @@ function normalizeChildren(nodeList) {
   }, []);
 }
 
+// Collapse runs of whitespace but keep line breaks so formatted HTML still looks nice.
 function collapseInternalWhitespace(text) {
   return text.replace(/\s+/g, (match) => (match.includes('\n') ? ' ' : match));
 }
 
+// Decide whether to keep whitespace that sits between inline elements.
 function shouldKeepSpace(node) {
   const previous = findMeaningfulSibling(node, 'previousSibling');
   const next = findMeaningfulSibling(node, 'nextSibling');
@@ -390,6 +410,7 @@ function shouldKeepSpace(node) {
   return isInlineNode(previous) && isInlineNode(next);
 }
 
+// Walk the DOM until we find the next sibling that contains visible content.
 function findMeaningfulSibling(node, direction) {
   let sibling = node[direction];
   while (sibling) {
@@ -405,6 +426,7 @@ function findMeaningfulSibling(node, direction) {
   return null;
 }
 
+// Treat text nodes and inline HTML tags as inline; everything else is block-level.
 function isInlineNode(node) {
   if (node.nodeType === Node.TEXT_NODE) {
     return true;
@@ -415,6 +437,7 @@ function isInlineNode(node) {
   return BLOCK_ELEMENTS.has(node.nodeName) === false;
 }
 
+// Type each node recursively so nested markup renders naturally.
 function typeNode(node, parent) {
   if (node.nodeType === Node.TEXT_NODE) {
     return typeTextNode(node, parent);
@@ -445,6 +468,7 @@ function typeNode(node, parent) {
   return Promise.resolve();
 }
 
+// Reveal the characters for a text node one by one to achieve the typewriter effect.
 function typeTextNode(node, parent) {
   const text = node.textContent || '';
 
@@ -477,6 +501,7 @@ function typeTextNode(node, parent) {
   });
 }
 
+// Add the animated dots displayed while the bot is "thinking".
 function createTypingIndicator() {
   const indicator = document.createElement('div');
   indicator.className = 'typing-indicator';
@@ -487,6 +512,7 @@ function createTypingIndicator() {
   return indicator;
 }
 
+// Clean up the temporary typing indicator before inserting final content.
 function removeTypingIndicator(container) {
   const indicator = container.querySelector('.typing-indicator');
   if (indicator) {
@@ -494,22 +520,43 @@ function removeTypingIndicator(container) {
   }
 }
 
+// Render quick reply buttons and optionally enable typed submissions for them.
 function setQuickReplies(options) {
+  currentQuickReplies = Array.isArray(options) ? options : [];
   quickReplies.innerHTML = '';
-  if (!options || options.length === 0) {
+  if (currentQuickReplies.length === 0) {
+    // Hide the tray entirely when no choices are available.
     quickReplies.style.display = 'none';
+    quickReplyTypingEnabled = false;
+    if (!activeInputStep) {
+      // Reset the input only if nothing else is expecting text.
+      textEntry.hidden = true;
+      userInput.value = '';
+      inputHint.textContent = '';
+    }
     return;
   }
   quickReplies.style.display = 'flex';
-  options.forEach((option) => {
+  currentQuickReplies.forEach((option) => {
     const button = document.createElement('button');
     button.type = 'button';
     button.textContent = option.label;
+    // Clicking should follow the same path as typing, so reuse the handler.
     button.addEventListener('click', () => handleQuickReply(option));
     quickReplies.appendChild(button);
   });
+  if (!activeInputStep) {
+    // When no text prompt is active, let the input box act as a quick reply catcher.
+    quickReplyTypingEnabled = true;
+    textEntry.hidden = false;
+    inputLabel.textContent = 'Choose an option';
+    userInput.placeholder = 'Type an option shown above';
+    userInput.value = '';
+    inputHint.textContent = 'Type the option text or tap a button.';
+  }
 }
 
+// Display the text field with contextual hints for the current step.
 function showTextInput({ label, placeholder, hint }) {
   activeInputStep = conversation.step;
   inputLabel.textContent = label || 'Your response';
@@ -518,18 +565,35 @@ function showTextInput({ label, placeholder, hint }) {
   textEntry.hidden = false;
   userInput.focus();
   inputHint.textContent = hint || '';
+  // Remove any quick replies so the input gets full attention.
   setQuickReplies([]);
 }
 
+// Hide the text input and clear helper text until another step needs it.
 function hideTextInput() {
   activeInputStep = null;
-  textEntry.hidden = true;
+  if (!quickReplyTypingEnabled) {
+    // Only hide the field if nothing else needs it; quick replies may keep it visible.
+    textEntry.hidden = true;
+  }
   userInput.value = '';
-  inputHint.textContent = '';
+  if (!quickReplyTypingEnabled) {
+    // Preserve hints for quick replies so they still guide typed answers.
+    inputHint.textContent = '';
+  }
 }
 
+// Unified entry point for quick replies regardless of typing or clicking.
 function handleQuickReply(option) {
+  // Mirror the user's selection in the transcript before processing.
   userSay(option.label);
+  userInput.value = '';
+  processQuickReply(option);
+}
+
+// Advance the state machine based on the selected quick reply option.
+function processQuickReply(option) {
+  // Peek at the current step so we can call its onSelect hook if it exists.
   const step = steps[conversation.step];
   let next = option.next || null;
   if (step && typeof step.onSelect === 'function') {
@@ -546,6 +610,8 @@ function handleQuickReply(option) {
     }
   }
   if (next) {
+    // Prevent typed submissions from triggering while the next step loads.
+    quickReplyTypingEnabled = false;
     advanceTo(next);
   }
 }
@@ -556,24 +622,39 @@ textEntry.addEventListener('submit', (event) => {
   if (!value) {
     return;
   }
+  // When the user types during a quick-reply prompt, try to match their text.
+  const quickReplyOption =
+    !activeInputStep && quickReplyTypingEnabled
+      ? findMatchingQuickReply(value)
+      : null;
   userSay(value);
+  userInput.value = '';
+  if (quickReplyOption) {
+    processQuickReply(quickReplyOption);
+    return;
+  }
+  // Route text answers to whichever step is currently waiting for input.
   const step = steps[activeInputStep];
   if (!step || typeof step.onInput !== 'function') {
     offTopicFallback();
     return;
   }
+  // Let the step validate the answer and tell us what to do next.
   const result = step.onInput(value) || {};
   if (result.stay) {
+    // Keep the cursor ready so the user can correct their answer.
     userInput.focus();
     return;
   }
   hideTextInput();
+  // Prefer the step's explicit next target, then fall back to its default.
   const nextStep = result.next || step.defaultNext;
   if (nextStep) {
     advanceTo(nextStep);
   }
 });
 
+// Gentle reminder when the bot cannot understand typed input outside a prompt.
 function offTopicFallback() {
   botSay(
     "Let's keep things package related. Would you like to resume troubleshooting or talk with an agent?"
@@ -584,6 +665,7 @@ function offTopicFallback() {
   ]);
 }
 
+// Move the conversation to another step and invoke its onEnter hook.
 function advanceTo(stepName) {
   hideTextInput();
   conversation.step = stepName;
@@ -593,16 +675,37 @@ function advanceTo(stepName) {
     return;
   }
   if (typeof step.onEnter === 'function') {
+    // Delay slightly so the previous message can finish animating.
     setTimeout(() => step.onEnter(), 260);
   }
 }
 
+// Match typed text to a quick reply option ignoring case and extra spaces.
+function findMatchingQuickReply(text) {
+  const normalized = text.trim().toLowerCase();
+  if (!normalized) {
+    return null;
+  }
+  // Compare the normalized text against both labels and explicit values.
+  return currentQuickReplies.find((option) => {
+    const labels = [option.label, option.value].filter(
+      (item) => typeof item === 'string'
+    );
+    return labels.some(
+      (label) => label.trim().toLowerCase() === normalized
+    );
+  });
+}
+
+// Generate pseudo-random tracking updates so every user sees different details.
 function buildTrackingSummary() {
   const lastScanLocation = pickRandom(locations);
   const status = pickRandom(statusPhrases);
   const now = new Date();
+  // Randomize how long ago the last scan happened so transcripts feel unique.
   const hoursAgo = Math.floor(Math.random() * 32) + 2; // 2-33 hours ago
   const lastScanDate = new Date(now.getTime() - hoursAgo * 60 * 60 * 1000);
+  // Pick an estimated delivery date a few days out.
   const etaDays = Math.floor(Math.random() * 4) + 1; // 1-4 days from now
   const etaDate = new Date(now.getTime() + etaDays * 24 * 60 * 60 * 1000);
   return {
@@ -612,6 +715,7 @@ function buildTrackingSummary() {
   };
 }
 
+// Format dates into a friendly string with month, day, and time.
 function formatDate(date) {
   return new Intl.DateTimeFormat('en-US', {
     month: 'short',
@@ -621,25 +725,32 @@ function formatDate(date) {
   }).format(date);
 }
 
+// Build a fake ticket identifier with the provided prefix.
 function generateTicket(prefix) {
   const id = Math.floor(100000 + Math.random() * 900000);
   return `${prefix}-${id}`;
 }
 
+// Grab a random element from a list.
 function pickRandom(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
 
+// Promise-based timeout helper used for pacing animations.
 function wait(duration) {
   return new Promise((resolve) => {
+    // setTimeout provides the asynchronous pause for the typewriter pacing.
     setTimeout(resolve, duration);
   });
 }
 
+// Wait for the next animation frame before continuing, allowing layout to settle.
 function nextFrame() {
   return new Promise((resolve) => {
+    // requestAnimationFrame syncs updates with the browser paint cycle.
     requestAnimationFrame(() => resolve());
   });
 }
 
+// Kick off the conversation the moment the script loads.
 advanceTo('start');
