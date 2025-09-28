@@ -115,6 +115,7 @@ flowchart TD
 
 
 ## Error Handling Examples
+---
 
 ### If an invalid date is entered:
 
@@ -138,9 +139,4 @@ The chatbot requires tracking numbers to be 8–22 characters long and contain o
 
 ![Gif didn't load properly.](assets/invalidcode.gif)
   
----
-
-
-
-
 ---
