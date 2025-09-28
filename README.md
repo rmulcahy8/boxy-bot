@@ -109,10 +109,9 @@ flowchart TD
 
 ## Screenshots / Examples
 
-```markdown
-![Chat demo](https://raw.githubusercontent.com/rmulcahy8/boxy-bot/main/assets/boxy.gif)
 
-```
+![any alternative text you want ](./boxy.gif)
+
 
 ---
 
