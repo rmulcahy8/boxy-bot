@@ -5,6 +5,8 @@
   --pink-soft: #f9e7ef;
   --navy: #20233a;
   --sand: #f4d7a1;
+  --user-bubble: linear-gradient(135deg, #f7b8cf, #e37aa1);
+  --user-bubble-shadow: 0 12px 24px rgba(227, 122, 161, 0.25);
   --shadow: 0 18px 38px rgba(32, 35, 58, 0.18);
   --chat-width: 560px;
 }
@@ -18,45 +20,16 @@ body {
   min-height: 100vh;
   background: linear-gradient(135deg, #fdf5ff, #fff9f2);
   color: var(--navy);
-}
-
-.page-shell {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 64px 24px 160px;
-}
-
-.intro {
-  background: white;
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow: var(--shadow);
-  max-width: 640px;
-  margin: 0 auto;
-}
-
-.intro h1 {
-  margin-top: 0;
-  font-size: clamp(2rem, 5vw, 3.2rem);
-}
-
-.intro p {
-  line-height: 1.6;
-  margin-bottom: 0;
-}
-
-@media (min-width: 1024px) {
-  .page-shell {
-    padding-right: calc(var(--chat-width) + 120px);
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
 }
 
 .chat-widget {
-  position: fixed;
-  bottom: 24px;
-  right: 32px;
   width: min(var(--chat-width), calc(100vw - 64px));
-  height: 620px;
+  max-width: 100%;
+  height: min(640px, calc(100vh - 96px));
   background: #ffffff;
   border-radius: 24px;
   display: flex;
@@ -133,10 +106,15 @@ body {
 }
 
 .message.user {
-  background: transparent;
-  color: var(--navy);
+  background: var(--user-bubble);
+  color: white;
   align-self: flex-end;
-  border-radius: 0;
+  border-radius: 18px 18px 4px 18px;
+  box-shadow: var(--user-bubble-shadow);
+}
+
+.message.user small {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .message strong {
@@ -268,15 +246,13 @@ body {
 }
 
 @media (max-width: 680px) {
-  .page-shell {
-    padding-bottom: 700px;
+  body {
+    padding: 24px 16px;
+    align-items: stretch;
   }
 
   .chat-widget {
-    left: 50%;
-    transform: translateX(-50%);
-    right: auto;
-    width: min(100%, var(--chat-width));
-    max-width: calc(100vw - 32px);
+    width: 100%;
+    height: min(640px, calc(100vh - 32px));
   }
 }
