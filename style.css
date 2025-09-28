@@ -120,8 +120,8 @@ body {
 }
 
 .message.bot {
-  background: #ffffff;
-  border: 2px solid var(--pink);
+  background: transparent;
+  border: none;
   align-self: flex-start;
   color: var(--navy);
 }
