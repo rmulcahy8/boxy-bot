@@ -136,7 +136,7 @@ The chatbot requires tracking numbers to be 8–22 characters long and contain o
 - User: `123`  
 - Bot: "Tracking numbers must be 8–22 characters. Please try again."
 
-![Gif didn't load properly.](./invalidcode.gif)
+![Gif didn't load properly.](assets/invalidcode.gif)
   
 ---
 
