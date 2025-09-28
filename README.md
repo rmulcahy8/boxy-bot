@@ -52,16 +52,57 @@ Conversation flowchart (see also `/assets/flowchart.svg`):
 
 ```mermaid
 flowchart TD
-  S([Start]) --> N[No tracking updates]
-  S --> M[Package missing]
-  S --> D[Damaged package]
-  S --> O[Something else]
-  N -->|validations| H{Agent or close}
-  M -->|open INV| H
-  D -->|file CLM| H
-  O -->|restart/agent| H
-  H --> A[Agent transfer]
-  H --> C[Closing]
+  %% === Start ===
+  S([Start: Bot greeting + quick replies])
+  S -->|No tracking updates| N1[Collect tracking number]
+  S -->|Package missing| M1[Collect expected delivery date]
+  S -->|Damaged package| D1[Describe damage]
+  S -->|Something else| O1[Reminder: package issues only]
+
+  %% === No tracking updates branch ===
+  N1 --> N1V{Valid tracking number?}
+  N1V -- No --> N1E[Show guidance + re-prompt]
+  N1E --> N1
+  N1V -- Yes --> N2[Ask carrier: UPS/USPS/FedEx]
+  N2 --> N2V{Valid carrier?}
+  N2V -- No --> N2E[Re-prompt carriers]
+  N2E --> N2
+  N2V -- Yes --> N3[Show status + ETA]
+  N3 --> N3A{Enable alerts?}
+  N3A -- Yes --> N4[Confirm alerts activated]
+  N3A -- No --> H1
+  N4 --> H1
+
+  %% === Missing package branch ===
+  M1 --> M1V{Valid past date?}
+  M1V -- No --> M1E[Re-prompt date format]
+  M1E --> M1
+  M1V -- Yes --> M2[Investigation opened: INV-XXXXXX]
+  M2 --> H1
+
+  %% === Damaged package branch ===
+  D1 --> D1V{Description >=10 chars?}
+  D1V -- No --> D1E[Re-prompt for detail]
+  D1E --> D1
+  D1V -- Yes --> D2[Claim filed: CLM-XXXXXX]
+  D2 --> D2A{Show care tips?}
+  D2A -- Yes --> D3[Care tips given]
+  D3 --> C1
+  D2A -- No --> C1
+
+  %% === Something else branch ===
+  O1 --> O1A{Restart or agent?}
+  O1A -- Restart --> S
+  O1A -- Agent --> A1
+
+  %% === Shared resolution ===
+  H1{Agent transfer or close?}
+  H1 -- Agent --> A1[Agent transfer <2 min]
+  H1 -- Close --> C1[Closing confirmed]
+  A1 --> R1[Restart option]
+  R1 --> S
+  C1 --> S
+
 ```
 
 ---
