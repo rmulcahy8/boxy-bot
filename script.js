@@ -302,6 +302,9 @@ function botSay(content) {
   const bubble = document.createElement('div');
   bubble.className = 'message bot typing';
 
+  const indicator = createTypingIndicator();
+  bubble.appendChild(indicator);
+
   let html = Array.isArray(content) ? content.join('<br />') : content;
   if (typeof html === 'string') {
     html = html.trim();
@@ -311,6 +314,9 @@ function botSay(content) {
     .then(() => {
       chatBody.appendChild(bubble);
       scrollToBottom();
+      return wait(320);
+    })
+    .then(() => {
       return typewriterInto(bubble, html);
     })
     .then(() => {
@@ -334,6 +340,7 @@ function scrollToBottom() {
 }
 
 function typewriterInto(container, html) {
+  removeTypingIndicator(container);
   container.innerHTML = '';
 
   const template = document.createElement('template');
@@ -458,6 +465,23 @@ function typeTextNode(node, parent) {
 
     step();
   });
+}
+
+function createTypingIndicator() {
+  const indicator = document.createElement('div');
+  indicator.className = 'typing-indicator';
+  indicator.setAttribute('aria-hidden', 'true');
+  for (let index = 0; index < 3; index += 1) {
+    indicator.appendChild(document.createElement('span'));
+  }
+  return indicator;
+}
+
+function removeTypingIndicator(container) {
+  const indicator = container.querySelector('.typing-indicator');
+  if (indicator) {
+    indicator.remove();
+  }
 }
 
 function setQuickReplies(options) {
@@ -594,6 +618,12 @@ function generateTicket(prefix) {
 
 function pickRandom(list) {
   return list[Math.floor(Math.random() * list.length)];
+}
+
+function wait(duration) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, duration);
+  });
 }
 
 advanceTo('start');
