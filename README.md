@@ -109,12 +109,9 @@ flowchart TD
 
 ## Screenshots / Examples
 
-GIF and SVG assets are in the `/assets/` folder:
-
 ```markdown
 ![Chat demo](assets/boxy.gif)
-![Conversation flowchart](assets/flowchart.svg)
-![Chat demo SVG](assets/chat-demo.svg)
+
 ```
 
 ---
