@@ -131,7 +131,7 @@ The chatbot validates dates with three checks: format `MM/DD/YYYY`, real calenda
 
   
 
-### Tracking number too short/invalid
+### If an invalid tracking number is entered:
 
 The chatbot requires tracking numbers to be 8–22 characters long and contain only letters or numbers. This is enforced with a regular expression check. If the user enters something shorter (e.g. `123`) or with invalid characters, the input fails validation.
 
