@@ -423,13 +423,23 @@ function typeNode(node, parent) {
   if (node.nodeType === Node.ELEMENT_NODE) {
     const clone = node.cloneNode(false);
     parent.appendChild(clone);
+    scrollToBottom();
     const children = normalizeChildren(node.childNodes);
-    return children
-      .reduce(
-        (promise, child) => promise.then(() => typeNode(child, clone)),
-        Promise.resolve()
-      )
-      .then(() => undefined);
+    const needsLayoutPause =
+      BLOCK_ELEMENTS.has(node.nodeName) || node.nodeName === 'BR';
+    const startTyping = () =>
+      children
+        .reduce(
+          (promise, child) => promise.then(() => typeNode(child, clone)),
+          Promise.resolve()
+        )
+        .then(() => undefined);
+
+    if (needsLayoutPause) {
+      return nextFrame().then(startTyping);
+    }
+
+    return startTyping();
   }
 
   return Promise.resolve();
@@ -623,6 +633,12 @@ function pickRandom(list) {
 function wait(duration) {
   return new Promise((resolve) => {
     setTimeout(resolve, duration);
+  });
+}
+
+function nextFrame() {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => resolve());
   });
 }
 
