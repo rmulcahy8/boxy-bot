@@ -48,7 +48,7 @@ Open `http://localhost:5500` in your browser.
 
 ## Conversation Flow
 
-Conversation flowchart (see also `/assets/flowchart.svg`):
+Conversation flowchart
 
 ```mermaid
 flowchart TD
