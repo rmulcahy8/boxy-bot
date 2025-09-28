@@ -11,6 +11,40 @@ const conversation = {
 };
 
 let activeInputStep = null;
+let typingQueue = Promise.resolve();
+
+const TYPEWRITER_DELAY = 22;
+const BLOCK_ELEMENTS = new Set([
+  'ADDRESS',
+  'ARTICLE',
+  'ASIDE',
+  'BLOCKQUOTE',
+  'BR',
+  'DIV',
+  'DL',
+  'FIELDSET',
+  'FIGCAPTION',
+  'FIGURE',
+  'FOOTER',
+  'FORM',
+  'H1',
+  'H2',
+  'H3',
+  'H4',
+  'H5',
+  'H6',
+  'HEADER',
+  'HR',
+  'LI',
+  'MAIN',
+  'NAV',
+  'OL',
+  'P',
+  'PRE',
+  'SECTION',
+  'TABLE',
+  'UL',
+]);
 
 const locations = [
   'Chicago, IL distribution center',
@@ -244,14 +278,22 @@ const steps = {
 
 function botSay(content) {
   const bubble = document.createElement('div');
-  bubble.className = 'message bot';
-  if (Array.isArray(content)) {
-    bubble.innerHTML = content.join('<br />');
-  } else {
-    bubble.innerHTML = content;
-  }
+  bubble.className = 'message bot typing';
   chatBody.appendChild(bubble);
   scrollToBottom();
+
+  let html = Array.isArray(content) ? content.join('<br />') : content;
+  if (typeof html === 'string') {
+    html = html.trim();
+  }
+
+  typingQueue = typingQueue
+    .then(() => typewriterInto(bubble, html))
+    .then(() => {
+      bubble.classList.remove('typing');
+      scrollToBottom();
+    });
+
   return bubble;
 }
 
@@ -265,6 +307,133 @@ function userSay(text) {
 
 function scrollToBottom() {
   chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function typewriterInto(container, html) {
+  container.innerHTML = '';
+
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  const nodes = normalizeChildren(template.content.childNodes);
+
+  return nodes.reduce(
+    (promise, node) => promise.then(() => typeNode(node, container)),
+    Promise.resolve()
+  );
+}
+
+function normalizeChildren(nodeList) {
+  return Array.from(nodeList).reduce((accumulator, node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent || '';
+      if (text.trim() === '') {
+        if (shouldKeepSpace(node)) {
+          node.textContent = ' ';
+          accumulator.push(node);
+        }
+        return accumulator;
+      }
+      node.textContent = collapseInternalWhitespace(text);
+      accumulator.push(node);
+      return accumulator;
+    }
+
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      accumulator.push(node);
+    }
+
+    return accumulator;
+  }, []);
+}
+
+function collapseInternalWhitespace(text) {
+  return text.replace(/\s+/g, (match) => (match.includes('\n') ? ' ' : match));
+}
+
+function shouldKeepSpace(node) {
+  const previous = findMeaningfulSibling(node, 'previousSibling');
+  const next = findMeaningfulSibling(node, 'nextSibling');
+  if (previous === null || next === null) {
+    return false;
+  }
+  return isInlineNode(previous) && isInlineNode(next);
+}
+
+function findMeaningfulSibling(node, direction) {
+  let sibling = node[direction];
+  while (sibling) {
+    if (sibling.nodeType === Node.TEXT_NODE) {
+      if (sibling.textContent && sibling.textContent.trim()) {
+        return sibling;
+      }
+    } else if (sibling.nodeType === Node.ELEMENT_NODE) {
+      return sibling;
+    }
+    sibling = sibling[direction];
+  }
+  return null;
+}
+
+function isInlineNode(node) {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return true;
+  }
+  if (node.nodeType !== Node.ELEMENT_NODE) {
+    return false;
+  }
+  return BLOCK_ELEMENTS.has(node.nodeName) === false;
+}
+
+function typeNode(node, parent) {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return typeTextNode(node, parent);
+  }
+
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    const clone = node.cloneNode(false);
+    parent.appendChild(clone);
+    const children = normalizeChildren(node.childNodes);
+    return children
+      .reduce(
+        (promise, child) => promise.then(() => typeNode(child, clone)),
+        Promise.resolve()
+      )
+      .then(() => undefined);
+  }
+
+  return Promise.resolve();
+}
+
+function typeTextNode(node, parent) {
+  const text = node.textContent || '';
+
+  if (text.trim() === '') {
+    parent.appendChild(document.createTextNode(text));
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve) => {
+    const textNode = document.createTextNode('');
+    parent.appendChild(textNode);
+    let index = 0;
+
+    const step = () => {
+      textNode.textContent += text[index];
+      index += 1;
+      scrollToBottom();
+
+      if (index < text.length) {
+        const char = text[index - 1];
+        const isPauseChar = /[.!?,]/.test(char);
+        const delay = isPauseChar ? TYPEWRITER_DELAY * 6 : TYPEWRITER_DELAY;
+        setTimeout(step, delay);
+      } else {
+        resolve();
+      }
+    };
+
+    step();
+  });
 }
 
 function setQuickReplies(options) {
