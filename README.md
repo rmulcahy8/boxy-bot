@@ -1,38 +1,49 @@
 # Boxy Bot
 
-Boxy Bot is a scripted package-tracking assistant designed for interview demos. The lightweight web widget mimics the experience of chatting with a shipping support bot without needing any backend services. It highlights state-machine driven conversations, quick replies, and guardrails for invalid data entry.
+Boxy Bot is a small, front-end only demo that showcases a scripted package-support assistant. The project was built for interview walkthroughs where a realistic conversation flow is more helpful than production-ready integrations.
 
-## Features
+## What the demo does
 
-- **Guided decision tree:** Leads with “What’s wrong with your package?” and branches to three common issues.
-- **State machine logic:** JavaScript orchestrates each step, manages context (tracking number, carrier, claims), and enforces validation rules.
-- **Mock logistics data:** Generates believable last-scan summaries, estimated delivery dates, and ticket IDs.
-- **Quick replies + targeted inputs:** Buttons drive most choices while text inputs capture tracking numbers, dates, or damage descriptions with inline hints.
-- **Agent handoff fallback:** Off-topic questions reroute customers to continue troubleshooting or request a human.
+- **Guided conversation:** The widget starts by asking what went wrong with a shipment and branches into three focused flows: tracking updates, missing packages, and damaged deliveries.
+- **Quick reply buttons:** Most steps use buttons so the user can stay inside the intended decision tree. When text is required (such as tracking numbers, delivery dates, or damage details) the widget temporarily swaps to a text field with inline guidance.
+- **Mock logistics data:** Tracking summaries, investigation ticket IDs, and claim IDs are generated on the fly so the flow feels live without any network calls.
+- **Off-topic guardrail:** If the conversation wanders away from package support, the bot nudges the user back to the main troubleshooting options or offers a handoff to a human.
 
-## Getting started
+All of this logic lives in [`script.js`](./script.js) as a lightweight state machine—each step defines how the bot greets the user, what input it expects, and which step should run next.
+
+## Running the demo
 
 1. Clone or download this repository.
-2. Open `index.html` in any modern browser, or run a static file server and navigate to `http://localhost:PORT/index.html`.
+2. Open [`index.html`](./index.html) in any modern browser.
+   - You can also serve the folder with any static file server and navigate to the hosted `index.html`.
 
-No build step is required—the project is pure HTML, CSS, and vanilla JavaScript.
+There is no build process or external dependency; the experience is pure HTML, CSS, and vanilla JavaScript.
 
-## Screenshots
+## Using the widget
 
-![Boxy Bot chat demo](assets/chat-demo.svg)
+1. Click the quick replies to move through the scripted paths.
+2. Provide input when the text field appears:
+   - Tracking numbers must be 8–22 alphanumeric characters.
+   - Expected delivery dates are entered as `YYYY-MM-DD` and must be in the past.
+   - Damage descriptions should include at least ten characters.
+3. Choose “Talk to an agent” at any time to trigger the mock handoff response, or “Restart” to begin again from the top.
 
-## Conversation flowchart
+## Project structure
 
-![Conversation flow](assets/flowchart.svg)
+```
+index.html   # Page shell and chat widget markup
+style.css    # Layout, typography, and widget styling
+script.js    # Conversation state machine and helper utilities
+assets/      # Mascot SVGs and other visual assets used by the page
+```
 
-## Future improvements
+## Ideas for further exploration
 
-- Integrate real carrier APIs for live tracking data and proof-of-delivery events.
-- Add semantic intent detection to understand freeform customer messages.
-- Persist conversations with local storage or customer profiles.
-- Support push/email alert preferences beyond the mock “set alerts” option.
-- Expand the decision tree with multi-package handling and return workflows.
+- Swap the random data helpers for real carrier APIs and event history.
+- Expand the decision tree with multi-package handling and richer self-service flows.
+- Persist conversations to local storage so the chat history survives a refresh.
+- Layer in natural-language intent detection before routing back into the scripted flows.
 
 ---
 
-Built as a minimal, front-end only prototype for the “Boxy Bot” interview assignment.
+This repository contains a single-page prototype—perfect for showing how a guided support assistant could behave without standing up any backend services.
