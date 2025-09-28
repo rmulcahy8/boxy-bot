@@ -154,26 +154,50 @@ const steps = {
   askExpectedDate: {
     onEnter() {
       botSay(
-        'I can start an investigation. When was the package supposed to arrive? (YYYY-MM-DD)'
+        'I can start an investigation. When was the package supposed to arrive? (MM/DD/YYYY)'
       );
       showTextInput({
         label: 'Expected delivery date',
-        placeholder: '2024-03-22',
-        hint: 'Use YYYY-MM-DD and choose a past date.',
+        placeholder: '03/22/2024',
+        hint: 'Use MM/DD/YYYY and choose a past date.',
       });
     },
     onInput(value) {
       const trimmed = value.trim();
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
-        botSay('Please use the YYYY-MM-DD format.');
-        inputHint.textContent = 'Example: 2024-03-22';
+      if (!/^\d{2}\/\d{2}\/\d{4}$/.test(trimmed)) {
+        botSay('Please use the MM/DD/YYYY format.');
+        inputHint.textContent = 'Example: 03/22/2024';
         return { stay: true };
       }
-      const entered = new Date(trimmed);
+      const [monthStr, dayStr, yearStr] = trimmed.split('/');
+      const month = Number.parseInt(monthStr, 10);
+      const day = Number.parseInt(dayStr, 10);
+      const year = Number.parseInt(yearStr, 10);
+      if (
+        Number.isNaN(day) ||
+        Number.isNaN(month) ||
+        Number.isNaN(year)
+      ) {
+        botSay('That date does not seem valid. Try again using MM/DD/YYYY.');
+        inputHint.textContent = 'Example: 03/22/2024';
+        return { stay: true };
+      }
+      const entered = new Date(year, month - 1, day);
+      entered.setHours(0, 0, 0, 0);
+      if (
+        entered.getFullYear() !== year ||
+        entered.getMonth() !== month - 1 ||
+        entered.getDate() !== day
+      ) {
+        botSay('That date does not seem valid. Try again using MM/DD/YYYY.');
+        inputHint.textContent = 'Example: 03/22/2024';
+        return { stay: true };
+      }
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       if (Number.isNaN(entered.getTime())) {
-        botSay('That date does not seem valid. Try again using YYYY-MM-DD.');
+        botSay('That date does not seem valid. Try again using MM/DD/YYYY.');
+        inputHint.textContent = 'Example: 03/22/2024';
         return { stay: true };
       }
       if (entered > today) {

@@ -24,7 +24,7 @@ There is no build process or external dependency; the experience is pure HTML, C
 1. Click the quick replies to move through the scripted paths.
 2. Provide input when the text field appears:
    - Tracking numbers must be 8–22 alphanumeric characters.
-   - Expected delivery dates are entered as `YYYY-MM-DD` and must be in the past.
+   - Expected delivery dates are entered as `MM/DD/YYYY` and must be in the past.
    - Damage descriptions should include at least ten characters.
 3. Choose “Talk to an agent” at any time to trigger the mock handoff response, or “Restart” to begin again from the top.
 
