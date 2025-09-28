@@ -118,6 +118,19 @@ flowchart TD
 
 ## Error Handling Examples
 
+### If an invalid date is entered:
+
+The chatbot validates dates with three checks: format `MM/DD/YYYY`, real calendar date (so `02/30/2024` is rejected), and constraint that the date must not be in the future. This prevents users from entering invalid or impossible delivery dates.
+
+**Example:**
+
+- User: `12/31/2099`  
+- Bot: "That date is in the future. Please enter the actual expected delivery date."
+
+  ![Gif didn't load properly.](./dateinvalid.gif)
+
+  
+
 ### Tracking number too short/invalid
 
 The chatbot requires tracking numbers to be 8–22 characters long and contain only letters or numbers. This is enforced with a regular expression check. If the user enters something shorter (e.g. `123`) or with invalid characters, the input fails validation.
@@ -127,16 +140,11 @@ The chatbot requires tracking numbers to be 8–22 characters long and contain o
 - User: `123`  
 - Bot: "Tracking numbers must be 8–22 characters. Please try again."
 
+![Gif didn't load properly.](./invalidcode.gif)
+  
 ---
 
-### Future delivery date entered
 
-The chatbot validates dates with three checks: format `MM/DD/YYYY`, real calendar date (so `02/30/2024` is rejected), and constraint that the date must not be in the future. This prevents users from entering invalid or impossible delivery dates.
-
-**Example:**
-
-- User: `12/31/2099`  
-- Bot: "That date is in the future. Please enter the actual expected delivery date."
 
 
 ---
