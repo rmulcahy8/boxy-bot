@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="480" height="360" viewBox="0 0 480 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="480" height="360" rx="24" fill="#F7F2FF"/>
+  <rect x="96" y="46" width="288" height="268" rx="18" fill="#FFFFFF" stroke="#F0C7E6" stroke-width="4"/>
+  <rect x="96" y="46" width="288" height="64" rx="18" fill="#FCE8F6"/>
+  <circle cx="132" cy="78" r="20" fill="#FFD7A8" stroke="#E18E32" stroke-width="4"/>
+  <rect x="122" y="66" width="20" height="24" rx="6" fill="#FFFAF2" stroke="#D87A2E" stroke-width="2"/>
+  <rect x="118" y="94" width="28" height="8" rx="4" fill="#E18E32" opacity="0.8"/>
+  <rect x="172" y="64" width="120" height="18" rx="9" fill="#FFFFFF" stroke="#E18E32" stroke-width="2"/>
+  <text x="182" y="78" font-family="'Fira Sans', Arial, sans-serif" font-size="12" font-weight="600" fill="#7D2566">Boxy Bot</text>
+  <text x="172" y="100" font-family="'Fira Sans', Arial, sans-serif" font-size="11" fill="#7D2566">How can I help with your package?</text>
+
+  <!-- Bot bubble 1 -->
+  <rect x="124" y="138" width="176" height="52" rx="16" fill="#FFFFFF" stroke="#F0C7E6" stroke-width="3"/>
+  <text x="140" y="162" font-family="'Fira Sans', Arial, sans-serif" font-size="12" fill="#5A1F4B">What's wrong with your package?</text>
+
+  <!-- Quick reply chips -->
+  <rect x="132" y="202" width="116" height="32" rx="16" fill="#FCE8F6"/>
+  <text x="142" y="222" font-family="'Fira Sans', Arial, sans-serif" font-size="12" fill="#7D2566">No tracking updates</text>
+  <rect x="256" y="202" width="116" height="32" rx="16" fill="#FCE8F6"/>
+  <text x="266" y="222" font-family="'Fira Sans', Arial, sans-serif" font-size="12" fill="#7D2566">Package missing</text>
+
+  <!-- User bubble -->
+  <rect x="204" y="250" width="164" height="44" rx="16" fill="#3B1B46"/>
+  <text x="214" y="272" font-family="'Fira Sans', Arial, sans-serif" font-size="12" fill="white">Let's track my parcel</text>
+</svg>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boxy Bot - Package Tracking Assistant</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="intro">
+        <h1>Boxy Bot Demo</h1>
+        <p>
+          This lightweight prototype showcases a scripted conversation flow for a
+          package-tracking chatbot. Use the widget in the lower-right corner to
+          experience how Boxy guides customers through common shipping issues.
+        </p>
+      </section>
+    </main>
+
+    <div class="chat-widget" aria-live="polite">
+      <header class="chat-header">
+        <div class="mascot" aria-hidden="true">
+          <svg viewBox="0 0 120 120" role="img" aria-label="Boxy the robot">
+            <rect x="10" y="20" width="100" height="80" rx="14" ry="14" fill="#f4d7a1" stroke="#e2b46f" stroke-width="4"></rect>
+            <rect x="28" y="40" width="20" height="20" rx="6" fill="#ffffff" stroke="#d48ba5" stroke-width="3"></rect>
+            <rect x="72" y="40" width="20" height="20" rx="6" fill="#ffffff" stroke="#d48ba5" stroke-width="3"></rect>
+            <circle cx="38" cy="50" r="6" fill="#20233a"></circle>
+            <circle cx="82" cy="50" r="6" fill="#20233a"></circle>
+            <rect x="42" y="68" width="36" height="12" rx="6" fill="#ffffff" stroke="#d48ba5" stroke-width="3"></rect>
+            <circle cx="38" cy="12" r="6" fill="#f4d7a1" stroke="#e2b46f" stroke-width="3"></circle>
+            <circle cx="82" cy="12" r="6" fill="#f4d7a1" stroke="#e2b46f" stroke-width="3"></circle>
+            <line x1="38" y1="18" x2="38" y2="32" stroke="#e2b46f" stroke-width="4" stroke-linecap="round"></line>
+            <line x1="82" y1="18" x2="82" y2="32" stroke="#e2b46f" stroke-width="4" stroke-linecap="round"></line>
+          </svg>
+        </div>
+        <div class="chat-meta">
+          <h2>Boxy Bot</h2>
+          <p>Your cheerful package helper</p>
+        </div>
+      </header>
+      <section class="chat-body" id="chatBody"></section>
+      <footer class="chat-footer">
+        <div class="quick-replies" id="quickReplies" role="group" aria-label="Suggested replies"></div>
+        <form id="textEntry" class="text-entry" hidden>
+          <label for="userInput" id="inputLabel" class="sr-only">Your response</label>
+          <input
+            type="text"
+            id="userInput"
+            name="userInput"
+            autocomplete="off"
+            placeholder="Type here"
+            required
+            aria-describedby="inputHint"
+          />
+          <button type="submit" class="send-button">Send</button>
+        </form>
+        <p id="inputHint" class="input-hint" aria-live="assertive"></p>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

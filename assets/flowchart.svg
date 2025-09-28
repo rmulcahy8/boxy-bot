@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640">
+  <style>
+    .box {
+      fill: #ffffff;
+      stroke: #d48ba5;
+      stroke-width: 3;
+      rx: 18;
+      ry: 18;
+      filter: drop-shadow(0 8px 16px rgba(32, 35, 58, 0.2));
+    }
+    .title {
+      font: 700 18px 'Inter', sans-serif;
+      fill: #20233a;
+      text-anchor: middle;
+    }
+    .caption {
+      font: 400 14px 'Inter', sans-serif;
+      fill: #20233a;
+      text-anchor: middle;
+    }
+    .arrow {
+      stroke: #20233a;
+      stroke-width: 2.5;
+      fill: none;
+    }
+    .arrow-head {
+      fill: #20233a;
+    }
+    .label {
+      font: 600 13px 'Inter', sans-serif;
+      fill: #20233a;
+      text-anchor: middle;
+    }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 z" class="arrow-head" />
+    </marker>
+  </defs>
+  <rect class="box" x="360" y="40" width="240" height="90" />
+  <text class="title" x="480" y="82">Start</text>
+  <text class="caption" x="480" y="108">“What’s wrong with your package?”</text>
+
+  <rect class="box" x="120" y="200" width="240" height="110" />
+  <text class="title" x="240" y="240">No tracking updates</text>
+  <text class="caption" x="240" y="266">Ask tracking # → carrier</text>
+  <text class="caption" x="240" y="290">Show mock status + ETA</text>
+
+  <rect class="box" x="360" y="200" width="240" height="110" />
+  <text class="title" x="480" y="240">Package seems missing</text>
+  <text class="caption" x="480" y="266">Ask expected date</text>
+  <text class="caption" x="480" y="290">Open investigation ticket</text>
+
+  <rect class="box" x="600" y="200" width="240" height="110" />
+  <text class="title" x="720" y="240">Package damaged</text>
+  <text class="caption" x="720" y="266">Ask damage description</text>
+  <text class="caption" x="720" y="290">File claim + tips</text>
+
+  <rect class="box" x="180" y="380" width="220" height="100" />
+  <text class="title" x="290" y="418">Tracking resolution</text>
+  <text class="caption" x="290" y="444">Options: alerts / agent / done</text>
+
+  <rect class="box" x="380" y="380" width="200" height="100" />
+  <text class="title" x="480" y="418">Investigation ticket</text>
+  <text class="caption" x="480" y="444">Options: agent / done</text>
+
+  <rect class="box" x="580" y="380" width="220" height="100" />
+  <text class="title" x="690" y="418">Claim submitted</text>
+  <text class="caption" x="690" y="444">Options: tips / done</text>
+
+  <rect class="box" x="360" y="540" width="240" height="80" />
+  <text class="title" x="480" y="578">Resolution choices</text>
+  <text class="caption" x="480" y="602">Agent handoff or finish</text>
+
+  <line class="arrow" x1="480" y1="130" x2="240" y2="200" marker-end="url(#arrow)" />
+  <line class="arrow" x1="480" y1="130" x2="480" y2="200" marker-end="url(#arrow)" />
+  <line class="arrow" x1="480" y1="130" x2="720" y2="200" marker-end="url(#arrow)" />
+
+  <line class="arrow" x1="240" y1="310" x2="290" y2="380" marker-end="url(#arrow)" />
+  <line class="arrow" x1="480" y1="310" x2="480" y2="380" marker-end="url(#arrow)" />
+  <line class="arrow" x1="720" y1="310" x2="690" y2="380" marker-end="url(#arrow)" />
+
+  <line class="arrow" x1="290" y1="480" x2="480" y2="540" marker-end="url(#arrow)" />
+  <line class="arrow" x1="480" y1="480" x2="480" y2="540" marker-end="url(#arrow)" />
+  <line class="arrow" x1="690" y1="480" x2="480" y2="540" marker-end="url(#arrow)" />
+
+  <text class="label" x="240" y="188">Quick replies</text>
+  <text class="label" x="480" y="188">Quick replies</text>
+  <text class="label" x="720" y="188">Quick replies</text>
+  <text class="label" x="480" y="528">Final choices</text>
+</svg>
